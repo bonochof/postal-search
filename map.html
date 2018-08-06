@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<style type="text/css">
+<!--
+#map-canvas {
+  width: 600px ;
+  height: 600px ;
+}
+-->
+</style>
+</head>
+<body>
+<div class="container">
+<div class="col-xs-2">
+
+<p><input id="address" name="address" type="text" readonly="readonly" class="btn btn-info" value="">のマップ</p>
+<p><div id="map-canvas"></div></p>
+<script src="//maps.googleapis.com/maps/api/js?key=***KEY***"></script>
+<script>
+// GET parameter
+var getUrlVars = function(){
+  var vars = {}; 
+  var param = location.search.substring(1).split('&');
+  for(var i = 0; i < param.length; i++) {
+    var keySearch = param[i].search(/=/);
+    var key = '';
+    if(keySearch != -1) key = param[i].slice(0, keySearch);
+    var val = param[i].slice(param[i].indexOf('=', 0) + 1);
+    if(key != '') vars[key] = decodeURI(val);
+  }
+  return vars;
+}
+
+// zipcode to address
+var addr = "";
+function setState(zip) {
+  $.ajax({
+    type : 'get',
+    url : 'https://maps.googleapis.com/maps/api/geocode/json',
+    crossDomain : true,
+    dataType : 'json',
+    async: false,
+    data : {
+      address : zip,
+      language : 'ja',
+      sensor : false
+    }
+  })
+  .then(
+    function(data){
+      var obj = data.results[0].address_components;
+      if (obj.length < 5) {
+        alert('正しい郵便番号を入力してください');
+        return false;
+      }
+      addr = obj[4]['long_name'] + obj[3]['long_name'] + obj[2]['long_name'] + obj[1]['long_name'];
+      $('#address').val(addr);
+    },
+    function(){
+      alert('住所情報が取得できませんでした');
+        return false;
+    })
+}
+
+// zipcode to lat and lng
+function attrLatLngFromAddress(address){
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode({'address': address, 'language': 'ja'}, function(results, status){
+    if(status == google.maps.GeocoderStatus.OK) {
+      // map
+      var map = new google.maps.Map( mapDiv, {
+        center: results[0].geometry.location,
+        zoom: 11 ,
+      });
+      
+      // marker
+      var marker = new google.maps.Marker( {
+        map: map,
+        position: results[0].geometry.location
+      });
+    }else{
+      console.log(results);
+      console.log(status);
+    }
+  });
+}
+
+// display
+var mapDiv = document.getElementById("map-canvas") ;
+
+// GET value
+var getVal = getUrlVars();
+
+// zipcode to address
+setState(getVal['zip']);
+
+// address to lat and lng
+attrLatLngFromAddress(addr);
+</script>
+
+<br>
+<a href="search_address.html" class="btn btn-info" role="button">Back</a>
+</div>
+</div>
+</body>
+</html>

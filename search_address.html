@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+<style type="text/css">
+<!--
+#suggest {
+  position: absolute;
+  background-color: #FFFFFF;
+  border: 1px solid #CCCCFF;
+  font-size: 90%;
+  width: 200px;
+  height: 400px;
+  overflow: auto;
+}
+#suggest div {
+  display: block;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#suggest div.select{ /* キー上下で選択した場合のスタイル */
+  color: #FFFFFF;
+  background-color: #3366FF;
+}
+#suggest div.over{ /* マウスオーバ時のスタイル */
+  background-color: #99CCFF;
+}
+-->
+</style>
+</head>
+
+<body>
+<div class="container">
+<div class="col-xs-2">
+
+<h2>Search address by postal number.</h2>
+<form method="GET" action="search_address.php">
+<input id="text" type="text" name="input_data" value="" autocomplete="off" style="display: block" class="form-control"></input>
+<div id="suggest" style="display:none;"></div>
+<button type="submit" class="btn btn-info" value="submit">Submit</button>
+</form>
+
+</div>
+</div>
+
+<script src="./suggest.js"></script>
+<script src="./list.js"></script>
+<script>
+  <!--
+  // wondowのonloadイベントでSuggestを生成
+  var start = function(){
+    new Suggest.Local("text", "suggest", list, {dispMax: 0, dispAllKey: true, highlight: true});
+  };
+  window.addEventListener ?
+    window.addEventListener('load', start, false) :
+    window.attachEvent('onload', start);
+  //-->
+</script>
+
+</body>
+</html>
